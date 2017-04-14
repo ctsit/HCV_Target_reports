@@ -1,0 +1,30 @@
+* Scenario
+Researchers need to get data out of redcap and analyze it. They
+want to see what data is provided by redi and see how it varies
+in order to make clinical / scientific decisions.
+
+For the delta report they need information that is present on the
+inr and chemistry imported forms. Further they only want information
+that is with a 36 week period (9 months) after the end of treatment.
+* Path to Done
+** DONE get records
+CLOSED: [2017-04-14 Fri 09:27]
+uses delta_report.py
+
+- [X] use cappy with lineman.json to request records
+- [X] find the subjects that have an 'eot_dsstdtc' value
+- [X] create the structure we will use later in the acc (accumulator) dict
+- [X] take the data from the records list and put it in the acc after cleaning
+- [X] write out the json to 'new_records.json'
+** DONE get rid of records we dont care about
+CLOSED: [2017-04-14 Fri 09:39]
+uses clear.py
+
+- [X] load new_records.json
+- [X] iterate through the subjects in the loaded data
+- [X] if the records in the subject have null dates drop them
+note that the date fields are 'eot_dsstdtc' 'chem_im_lbdtc' and 'inr_im_lbdtc'
+- [X] write out the data to 'cleared_records.json'
+** TODO change structure of data
+** TODO trim data to range that we care about
+** TODO do the statistics
