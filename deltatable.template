@@ -1,0 +1,2 @@
+research_id,test,baseline,min,max,mean,sigma,delta{% for row in rows %}
+{{ row }}{% endfor %}

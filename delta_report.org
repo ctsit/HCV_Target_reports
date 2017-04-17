@@ -25,6 +25,72 @@ uses clear.py
 - [X] if the records in the subject have null dates drop them
 note that the date fields are 'eot_dsstdtc' 'chem_im_lbdtc' and 'inr_im_lbdtc'
 - [X] write out the data to 'cleared_records.json'
-** TODO change structure of data
-** TODO trim data to range that we care about
-** TODO do the statistics
+** DONE change structure of data
+CLOSED: [2017-04-18 Tue 08:52]
+uses redi_population.py
+
+- [X] load the cleared_records.json
+- [X] keep track of which subjects have an imported form completed
+- [X] split the chem records into a chem field and the inr in an inr field
+- [X] save off the redi records and the non redi records
+- [X] save off some stats about what happened
+** DONE trim data to range that we care about
+CLOSED: [2017-04-18 Tue 10:23]
+uses time_trim.py
+
+- [ ] Read in the redi_records
+- [ ] trim the data to the 36 weeks after end of treatment
+- [ ] make sure to keep a baseline which is the closest to the EOT without going past
+** DONE do the statistics
+CLOSED: [2017-04-18 Tue 10:23]
+* Next steps
+** run on chem and normal inr
+** DONE get csv with subid test baseline, max, min, mean, absolute delta
+CLOSED: [2017-04-18 Tue 10:19]
+** DONE get dm_usubjid
+CLOSED: [2017-04-18 Tue 10:19]
+** subjects that dont go through
+we need to capture the information about people that dont make it
+through the process. Then we need to have that information in a 
+csv for Joy's consumption.
+
+*** Where we could lose people
+- [ ] people that dont have eot_dsstdtc
+- [ ] people that have only null dates
+- [ ] people that dont have an imported form completed
+- [ ] people that dont have information in the range and a baseline
+* Plans for how to build future reports
+** Challenges
+- How to grab the data we need
+- How to alter that data 
+- How to log what happen
+- How to report on what we did
+** Solutions
+*** Getting the data
+Get all the data that we can for a particular project and
+cache it locally. Only go out and get the data when specified
+or it doesn't exist
+*** Transform data
+Make sure that each step is incremental. Pipelines will help here
+but we need to make sure that data in one form is acceptable in
+the next.
+Perhaps we should have a map reduce api here. There needs to be
+some common approach to solving these problems so they can be done
+more simply in the future
+*** Logging things that happen
+Essentially this is just another return value for a particular map
+reduce operation. It will amount to calling out to a log thing or
+simply having a complex return value for our map and reduce funcs.
+*** Build the final report
+Data will be consumed in different ways. Most of the time we will 
+probably want some kind of table / csv. This is the inverse problem
+that optimus handles and is non trivial. Perhaps we should be thinking
+in tables for this kind of thing? that really isnt fun. More thought
+needs to be put into this problem for a future analytics tool
+
+  
+
+
+
+
+

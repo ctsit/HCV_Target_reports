@@ -11,7 +11,7 @@ closest_by_subj_chem = {}
 closest_by_subj_inr = {}
 
 # get rid of any records past the end date
-for subid, subj in zip( data.keys(), data.values() ):
+for subid, subj in data.items():
     end = subj['end_date']
     eot = subj['eot']
     print(subid)
@@ -57,7 +57,7 @@ for subid, subj in zip( data.keys(), data.values() ):
             print(record)
             exit()
 
-for subid, subj in zip( data.keys(), data.values() ):
+for subid, subj in data.items():
     end = subj['end_date']
     eot = subj['eot']
     print(subid)
@@ -138,7 +138,7 @@ for subj in mutable.values():
             has_base_and_recordsi += 1
 
 mut2 = copy(mutable)
-for subid, subj in zip(mutable.keys(), mutable.values()):
+for subid, subj in mutable.items():
     rclen = len(subj['chem'])
     rilen = len(subj['inr'])
     basec_keys_len = len(list(( subj.get('baseline_chem') or {} ).keys()))

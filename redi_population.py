@@ -7,7 +7,7 @@ with open('cleared_records.json', 'r') as infile:
 redi = {}
 notredi = {}
 
-for subid, subj in zip(data.keys(), data.values()):
+for subid, subj in data.items():
     records = subj['records']
 
     if len(records) > 1:
@@ -20,7 +20,7 @@ for subid, subj in zip(data.keys(), data.values()):
     else:
         notredi[subid] = subj
 
-for subid, subj in zip(data.keys(), data.values()):
+for subid, subj in data.items():
     records = subj['records']
     subj['inr'] = [copy( record ) for record in records]
     for record in subj['inr']:
