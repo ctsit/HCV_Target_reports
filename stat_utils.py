@@ -36,3 +36,41 @@ def get_max(records, field):
 def get_min(records, field):
     recs = [float( rec.get(field) ) for rec in records if rec.get(field)]
     return min(recs) if len(recs) else 'No records with value'
+
+def date_diff(date1, date2):
+    print(date1, date2)
+    if not ( date1 and date2 ):
+        return 0
+    ymd1 = [int(item) for item in date1.split('-')]
+    ymd2 = [int(item) for item in date2.split('-')]
+
+    diffs = [ymd1[i] - ymd2[i] for i in range(0, 3)]
+
+    week_diff = [diffs[0] * 52, diffs[1] * 4, diffs[2] / 7.0]
+    diff = abs(sum(week_diff))
+    return diff
+
+
+def get_follow_up_stats(recs, form_str):
+    # baseline is first rec
+    date_key = "{}_im_lbdtc".format(form_str)
+    ttff = "{}_weeks_to_first_followup".format(form_str)
+    ttlf = "{}_week_to_last_followup".format(form_str)
+    fuperiod = "{}_followup_period_weeks_length".format(form_str)
+    base_date = recs[0].get(date_key)
+    first_fu_date = base_date
+    last_fu_date = base_date
+    # first follow up will be the second record
+    if len(recs) > 1:
+        first_fu_date = recs[1].get(date_key)
+    # get time to first fu
+    # get last record, get time to last fu
+    if len(recs) > 1:
+        last_fu_date = recs[-1].get(date_key)
+    # get range over which it happened
+    return {
+        ttff: date_diff(base_date, first_fu_date),
+        ttlf: date_diff(base_date, last_fu_date),
+        fuperiod: date_diff(first_fu_date, last_fu_date)
+    }
+

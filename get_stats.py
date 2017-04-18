@@ -30,13 +30,16 @@ for subid, subj in data.items():
         base = copy(subj.get('baseline_{}'.format(form))) or {}
         recs.insert(0, base)
 
+        if not subject_stats.get(subid):
+            subject_stats[subid] = {}
+
+        follow_ups = get_follow_up_stats(recs, form)
+        for key, val in follow_ups.items():
+            subject_stats[subid][key] = val
+
         for field in fields:
-            # pdb.set_trace()
             field_recs = copy([rec for rec in recs if rec.get(field)])
             delta, deltas = get_delta(field_recs, field, date_field)
-            # pdb.set_trace()
-            if not subject_stats.get(subid):
-                subject_stats[subid] = {}
             subject_stats[subid]['{}_{}_baseline'.format(form, field)] = base.get(field)
             subject_stats[subid]['{}_{}_mean'.format(form, field)] = get_mean(field_recs, field)
             subject_stats[subid]['{}_{}_max'.format(form, field)] = get_max(field_recs, field)
@@ -46,6 +49,7 @@ for subid, subj in data.items():
             subject_stats[subid]['{}_{}_deltas'.format(form, field)] = deltas
         subject_stats[subid]['total_{}_records'.format(form)] = len(recs)
     subject_stats[subid]['research_id'] = subj['research_id']
+
 
 with open('sub_stats.json', 'w') as outfile:
     outfile.write(json.dumps(subject_stats, indent=4, sort_keys=True))

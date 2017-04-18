@@ -10,134 +10,96 @@ for subj in mutable.values():
 closest_by_subj_chem = {}
 closest_by_subj_inr = {}
 
-# get rid of any records past the end date
-for subid, subj in data.items():
-    end = subj['end_date']
-    eot = subj['eot']
-    print(subid)
-    for index, record in enumerate(subj['chem']):
+def clean_records(mutable, data, closest, form, date_field):
+    for subid, subj in data.items():
+        end = subj['end_date']
+        eot = subj['eot']
+        for index, record in enumerate(subj[form]):
+            record_date = record.get(date_field)
+            if not record_date:
+                record_date = '9999-99-99' # always greater than any end date
 
-        record_date = record.get('chem_im_lbdtc')
-        if not record_date:
-            record_date = '9999-99-99' # always greater than any end date
+            # get rid of records outside the range
+            if record_date > end:
+                mutable[subid][form][index]['_status'] = 'after_36weeks'
 
-        # get rid of records outside the range
-        if record_date > end:
-            mutable[subid]['chem'][index]['_status'] = 'after_36weeks'
+            # delete all records before the eot date
+            elif record_date <= eot:
+                mutable[subid][form][index]['_status'] = 'before_eot'
+                # but make sure we are keeping the closest to eot around
+                if not closest.get(subid):
+                    closest[subid] = {
+                        'date': record_date,
+                        'val': record
+                    }
+                elif record_date > closest[subid]['date']:
+                    closest[subid] = {
+                        'date': record_date,
+                        'val': record
+                    }
+                else:
+                    pass
 
-        # delete all records before the eot date
-        elif record_date <= eot:
-            mutable[subid]['chem'][index]['_status'] = 'before_eot'
-            # but make sure we are keeping the closest to eot around
-            if not closest_by_subj_chem.get(subid):
-                closest_by_subj_chem[subid] = {
-                    'date': record_date,
-                    'val': record
-                }
-            elif record_date > closest_by_subj_chem[subid]['date']:
-                print(eot)
-                print(record_date)
-                print(closest_by_subj_chem[subid]['date'])
-                print()
-                closest_by_subj_chem[subid] = {
-                    'date': record_date,
-                    'val': record
-                }
+            # do nothing to the mutable structure when the record is in the range
+            elif record_date >= eot and record_date <= end:
+                mutable[subid][form][index]['_status'] = 'in_range'
+
+            # in case something bad / weird happens we know
             else:
-                pass
+                print(subid)
+                print('has a record with bad data')
+                print(record)
+                exit()
 
-        # do nothing to the mutable structure when the record is in the range
-        elif record_date >= eot and record_date <= end:
-            mutable[subid]['chem'][index]['_status'] = 'in_range'
-
-        # in case something bad / weird happens we know
-        else:
-            print(subid)
-            print('has a record with bad data')
-            print(record)
-            exit()
-
-for subid, subj in data.items():
-    end = subj['end_date']
-    eot = subj['eot']
-    print(subid)
-    for index, record in enumerate(subj['inr']):
-
-        record_date = record.get('inr_im_lbdtc')
-        if not record_date:
-            record_date = '9999-99-99' # always greater than any end date
-
-        # get rid of records outside the range
-        if record_date > end:
-            mutable[subid]['inr'][index]['_status'] = 'after_36weeks'
-
-        # delete all records before the eot date
-        elif record_date <= eot:
-            mutable[subid]['inr'][index]['_status'] = 'before_eot'
-            # but make sure we are keeping the closest to eot around
-            if not closest_by_subj_inr.get(subid):
-                closest_by_subj_inr[subid] = {
-                    'date': record_date,
-                    'val': record
-                }
-            elif record_date > closest_by_subj_inr[subid]['date']:
-                print(eot)
-                print(record_date)
-                print(closest_by_subj_inr[subid]['date'])
-                print()
-                closest_by_subj_inr[subid] = {
-                    'date': record_date,
-                    'val': record
-                }
-            else:
-                pass
-
-        # do nothing to the mutable structure when the record is in the range
-        elif record_date >= eot and record_date <= end:
-            mutable[subid]['inr'][index]['_status'] = 'in_range'
-
-        # in case something bad / weird happens we know
-        else:
-            print(subid)
-            print('has a record with bad data')
-            print(record)
-            exit()
+clean_records(mutable, data, closest_by_subj_chem, 'chem', 'chem_im_lbdtc')
+clean_records(mutable, data, closest_by_subj_inr, 'inr', 'inr_im_lbdtc')
 
 # set the baseline to be the closest record by subject
-for subid in closest_by_subj_chem.keys():
-    mutable[subid]['baseline_chem'] = closest_by_subj_chem[subid]['val']
+def set_baseline(mutable, closest, form):
+    for subid in closest.keys():
+        mutable[subid]['baseline_{}'.format(form)] = closest[subid]['val']
 
-for subid in closest_by_subj_inr.keys():
-    mutable[subid]['baseline_inr'] = closest_by_subj_inr[subid]['val']
+set_baseline(mutable, closest_by_subj_chem, 'chem')
+set_baseline(mutable, closest_by_subj_inr, 'inr')
 
 with open('time_status.json', 'w') as outfile:
     outfile.write(json.dumps(mutable, indent=4, sort_keys=True))
 
-has_inrange_recordsc_count = 0
-has_inrange_recordsi_count = 0
-has_baselinec = 0
-has_baselinei = 0
-has_base_and_recordsc = 0
-has_base_and_recordsi = 0
-for subj in mutable.values():
-    subj['chem'] = [record for record in subj['chem'] if record.get('_status') == 'in_range']
-    subj['inr'] = [record for record in subj['inr'] if record.get('_status') == 'in_range']
-    basec_keys_len = len(list(( subj.get('baseline_chem') or {} ).keys()))
-    basei_keys_len = len(list(( subj.get('baseline_inr') or {} ).keys()))
-    if (len(subj['chem'])):
-        has_inrange_recordsc_count += 1
-    if (len(subj['inr'])):
-        has_inrange_recordsi_count += 1
-    if basec_keys_len:
-        has_baselinec += 1
-        if (len(subj['chem'])):
-            has_base_and_recordsc += 1
-    if basei_keys_len:
-        has_baselinei += 1
-        if (len(subj['inr'])):
-            has_base_and_recordsi += 1
+report = {}
+def build_report(mutable, report, form):
+    base_recs = 'subjects_with_baseline_{}'.format(form)
+    base_recs_count = '_subjects_with_baseline_{}_count'.format(form)
+    in_range_recs = 'subjects_with_in_range_records_{}'.format(form)
+    in_range_recs_count = '_subjects_with_in_range_recs_{}_count'.format(form)
+    has_both = 'has_both_{}'.format(form)
+    has_both_count = '_has_both_{}_count'.format(form)
+    report[base_recs] = []
+    report[in_range_recs] = []
+    report[has_both] = []
+
+    for subid, subj in mutable.items():
+        subj[form] = [rec for rec in subj[form] if rec.get('_status') == 'in_range']
+        rec_num = len(subj[form])
+        has_base = len(list((subj.get('baseline_{}'.format(form)) or {}).keys()))
+
+        if rec_num:
+            report[in_range_recs].append(subid)
+
+        if has_base:
+            report[base_recs].append(subid)
+
+        if subid in report[base_recs] and subid in report[in_range_recs]:
+            report[has_both].append(subid)
+
+    report[in_range_recs_count] = len(set(report[in_range_recs]))
+    report[base_recs_count] = len(set(report[base_recs]))
+    report[has_both_count] = len(set(report[has_both]))
+
+build_report(mutable, report, 'chem')
+build_report(mutable, report, 'inr')
 
 mut2 = copy(mutable)
+
 for subid, subj in mutable.items():
     rclen = len(subj['chem'])
     rilen = len(subj['inr'])
@@ -150,11 +112,4 @@ with open('time_trimmed.json', 'w') as outfile:
     outfile.write(json.dumps(mut2, indent=4, sort_keys=True))
 
 with open('time_trimmed_stats.json', 'w') as outfile:
-    outfile.write(json.dumps({
-        'has_inrange_recordsc_count': has_inrange_recordsc_count,
-        'has_baselinec': has_baselinec,
-        'has_base_and_recordsc': has_base_and_recordsc,
-        'has_inrange_recordsi_count': has_inrange_recordsi_count,
-        'has_baselinei': has_baselinei,
-        'has_base_and_recordsi': has_base_and_recordsi
-    }, indent=4, sort_keys=True))
+    outfile.write(json.dumps(report, indent=4, sort_keys=True))

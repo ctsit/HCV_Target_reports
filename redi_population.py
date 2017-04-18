@@ -20,6 +20,7 @@ for subid, subj in data.items():
     else:
         notredi[subid] = subj
 
+
 for subid, subj in data.items():
     records = subj['records']
     subj['inr'] = [copy( record ) for record in records]
@@ -37,8 +38,8 @@ for subid, subj in data.items():
     del subj['records']
 
 
-rkeys = len(list(redi.keys()))
-nkeys = len(list(notredi.keys()))
+rkeys = len(set(list(redi.keys())))
+nkeys = len(set(list(notredi.keys())))
 
 with open('redi_records.json', 'w') as outfile:
     outfile.write(json.dumps(redi, indent=4, sort_keys=True))

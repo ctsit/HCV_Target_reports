@@ -38,13 +38,27 @@ uses redi_population.py
 CLOSED: [2017-04-18 Tue 10:23]
 uses time_trim.py
 
-- [ ] Read in the redi_records
-- [ ] trim the data to the 36 weeks after end of treatment
-- [ ] make sure to keep a baseline which is the closest to the EOT without going past
+- [X] Read in the redi_records
+- [X] trim the data to the 36 weeks after end of treatment
+- [X] make sure to keep a baseline which is the closest to the EOT without going past
 ** DONE do the statistics
 CLOSED: [2017-04-18 Tue 10:23]
+*** Followup statistics
+- [ ] First follow up
+- [ ] last follow up
+- [ ] range of data
+*** Summary stats
+- [ ] average followup length of time
+
+* Notes about implementation
+** The 'mutable' dictionary
+This is used because a dictionary that is being iterated through cannot have its keys
+changed nor any key value terms deleted. Therefore, throughout the scripts we utilize
+a mutable dictionary to build up the changes that we need at each step of the process
+
 * Next steps
-** run on chem and normal inr
+** DONE run on chem and normal inr
+CLOSED: [2017-05-02 Tue 10:08]
 ** DONE get csv with subid test baseline, max, min, mean, absolute delta
 CLOSED: [2017-04-18 Tue 10:19]
 ** DONE get dm_usubjid
