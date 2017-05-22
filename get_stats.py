@@ -49,6 +49,8 @@ for subid, subj in data.items():
             subject_stats[subid]['{}_{}_deltas'.format(form, field)] = deltas
         subject_stats[subid]['total_{}_records'.format(form)] = len(recs)
     subject_stats[subid]['research_id'] = subj['research_id']
+    subject_stats[subid]['regimen'] = subj['regimen']
+    subject_stats[subid]['duration'] = subj['duration']
 
 
 with open('sub_stats.json', 'w') as outfile:

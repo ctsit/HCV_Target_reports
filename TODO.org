@@ -1,0 +1,11 @@
+# keepATODO.com
+# Keep A TODO LIST: (There is always lots of stuff TODO, so just do it ;)
+
+* Review follow up report additions
+** TODO [#A]
+(pfwhite9@gmail.com) <2017-05-30 Tue> +HCVProject
+The followup report got different data when it was run twice. We need to
+make sure that this is not the result of a bug with the code or if it is 
+a data problem
+
+

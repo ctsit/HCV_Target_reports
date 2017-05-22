@@ -1,0 +1,7 @@
+*.csv
+*.json
+settings.yaml
+split_records/*
+records/*
+venv
+*.pyc

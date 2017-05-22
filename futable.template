@@ -1,2 +1,2 @@
-research_id,chem_weeks_to_first_follow_up,chem_weeks_to_last_follow_up,chem_followup_period_weeks_length,inr_weeks_to_first_follow_up,inr_weeks_to_last_follow_up,inr_followup_period_weeks_length{% for row in rows %}
+research_id,chem_weeks_to_first_follow_up,chem_weeks_to_last_follow_up,chem_followup_period_weeks_length,inr_weeks_to_first_follow_up,inr_weeks_to_last_follow_up,inr_followup_period_weeks_length,regimen,duration{% for row in rows %}
 {{ row }}{% endfor %}

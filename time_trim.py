@@ -105,7 +105,7 @@ for subid, subj in mutable.items():
     rilen = len(subj['inr'])
     basec_keys_len = len(list(( subj.get('baseline_chem') or {} ).keys()))
     basei_keys_len = len(list(( subj.get('baseline_inr') or {} ).keys()))
-    if ( not rclen and not rilen ) or ( not basec_keys_len and not basei_keys_len ):
+    if not ( rclen or rilen ) and not ( basec_keys_len or basei_keys_len ):
         del mut2[subid]
 
 with open('time_trimmed.json', 'w') as outfile:

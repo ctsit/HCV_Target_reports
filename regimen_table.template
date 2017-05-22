@@ -1,0 +1,2 @@
+research_id,regimen,duration,cirr_status{% for row in rows %}
+{{ row }}{% endfor %}

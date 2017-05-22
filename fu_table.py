@@ -23,6 +23,9 @@ for subid, subj in data.items():
     row.append(subj['inr_week_to_last_followup'])
     row.append(subj['inr_followup_period_weeks_length'])
 
+    row.append(subj['regimen'])
+    row.append(subj['duration'])
+
     rows.append(','.join([str(item) for item in row]))
 
 with open('follow_up_report.csv', 'w') as outfile:
